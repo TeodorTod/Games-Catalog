@@ -11,6 +11,11 @@ const GameDetails = ({
         comment: ''
     });
 
+    const [error, setError] = useState({
+        username: '',
+        comment: ''
+    });
+
     const game = games.find(x => x._id == gameId);
 
     const addCommentHandler = (e) => {
@@ -22,6 +27,22 @@ const GameDetails = ({
         setComment(state => ({
             ...state,
             [e.target.name]: e.target.value
+        }));
+    };
+
+    const ValidateUsername = (e) => {
+        const username = e.target.value;
+        let errorMessage = '';
+
+        if (username.length < 4) {
+            errorMessage = 'Username must be at least 4 characters long';
+        } else if (username.length > 14) {
+            errorMessage = 'Username is too long';
+        }
+
+        setError(state => ({
+            ...state,
+            username: errorMessage
         }));
     };
 
@@ -48,7 +69,7 @@ const GameDetails = ({
                             </li>
                         )}
                     </ul>
-                    {!game.comments && 
+                    {!game.comments &&
                         <p className="no-comment">No comments.</p>
                     }
 
@@ -70,8 +91,12 @@ const GameDetails = ({
                         name="username"
                         placeholder="Gosho Peshov"
                         onChange={onChange}
+                        onBlur={ValidateUsername}
                         value={comment.username}
                     />
+                    {error.username &&
+                        <span style={{color: 'red', fontSize: 30}}>{error.username}</span>
+                    }
 
                     <textarea
                         name="comment"
