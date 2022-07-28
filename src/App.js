@@ -4,7 +4,7 @@ import uniqid from 'uniqid';
 
 import * as gameService from './services/gameService';
 
-
+import { AuthContext } from "./contexts/AuthContext";
 
 import Header from './components/Header/Header';
 import Home from './components/Home/Home';
@@ -15,6 +15,7 @@ import GameDetails from './components/GameDetails/GameDetails';
 
 
 import './App.css';
+import Logout from "./components/Logout/Logout";
 
 
 const Register = lazy(() => import('./components/Register/Register'));
@@ -23,6 +24,15 @@ const Register = lazy(() => import('./components/Register/Register'));
 function App() {
     const [games, setGames] = useState([]);
     const navigate = useNavigate();
+    const [auth, setAuth] = useState({});
+
+    const userLogin = (authData) => {
+        setAuth(authData)
+    };
+
+    const userLogout = () => {
+        setAuth({});
+    }
 
     const addComment = (gameId, comment) => {
         setGames(state => {
@@ -57,6 +67,7 @@ function App() {
     };
 
     return (
+        <AuthContext.Provider value={{user: auth, userLogin, userLogout}}>
         <div id="box">
             <Header />
             {/* Main Content */}
@@ -69,6 +80,7 @@ function App() {
                             <Register />
                         </Suspense>}
                     />
+                    <Route path="/logout" element={<Logout />} />
                     <Route path='/create' element={<CreateGame addGameHandler={addGameHandler} />} />
                     <Route path='/catalog' element={<Catalog games={games} />} />
                     <Route path='/catalog/:gameId' element={<GameDetails games={games} addComment={addComment} />} />
@@ -102,6 +114,7 @@ function App() {
             </section> */}
 
         </div>
+        </AuthContext.Provider>
     );
 }
 
