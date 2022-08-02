@@ -18,6 +18,7 @@ import GameDetails from './components/GameDetails/GameDetails';
 import './App.css';
 import Logout from "./components/Logout/Logout";
 import useLocalStorage from "./hooks/useLocalStorage";
+import EditGame from "./components/EditGame/EditGame";
 
 
 const Register = lazy(() => import('./components/Register/Register'));
@@ -63,10 +64,17 @@ function App() {
     const gameAdd = (gameData) => {
         setGames(state => [
             ...state,
-            gameData
+            {
+                ...gameData,
+                _id: uniqid()
+            }
         ])
 
         navigate('/catalog');
+    };
+
+    const gameEdit = (gameId, gameData) => {
+        setGames(state => state.map(x => x._id == gameId ? gameData : x));
     };
 
     return (
@@ -75,7 +83,7 @@ function App() {
                 <Header />
                 {/* Main Content */}
                 <main id="main-content">
-                    <GameContext.Provider value={{ games, gameAdd }}>
+                    <GameContext.Provider value={{ games, gameAdd, gameEdit }}>
                         <Routes>
                             <Route path='/' element={<Home games={games} />} />
                             <Route path='/login' element={<Login />} />
@@ -86,6 +94,7 @@ function App() {
                             />
                             <Route path="/logout" element={<Logout />} />
                             <Route path='/create' element={<CreateGame />} />
+                            <Route path='/games/:gameId/edit' element={<EditGame />} />
                             <Route path='/catalog' element={<Catalog games={games} />} />
                             <Route path='/catalog/:gameId' element={<GameDetails games={games} addComment={addComment} />} />
                         </Routes>
