@@ -4,8 +4,8 @@ import uniqid from 'uniqid';
 
 import * as gameService from './services/gameService';
 
-import { AuthContext } from "./contexts/AuthContext";
 import { GameContext } from "./contexts/GameContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 import Header from './components/Header/Header';
 import Home from './components/Home/Home';
@@ -17,7 +17,6 @@ import GameDetails from './components/GameDetails/GameDetails';
 
 import './App.css';
 import Logout from "./components/Logout/Logout";
-import useLocalStorage from "./hooks/useLocalStorage";
 import EditGame from "./components/EditGame/EditGame";
 
 
@@ -27,19 +26,8 @@ const Register = lazy(() => import('./components/Register/Register'));
 function App() {
     const [games, setGames] = useState([]);
     const navigate = useNavigate();
-    const [auth, setAuth] = useLocalStorage('auth', {});
 
-    const userLogin = (authData) => {
-        setAuth(authData);
-    };
 
-    const userRegister = (authData) => {
-        setAuth(authData);
-    }
-
-    const userLogout = () => {
-        setAuth({});
-    }
 
     const addComment = (gameId, comment) => {
         setGames(state => {
@@ -78,7 +66,7 @@ function App() {
     };
 
     return (
-        <AuthContext.Provider value={{ user: auth, userLogin, userLogout, userRegister }}>
+        <AuthProvider>
             <div id="box">
                 <Header />
                 {/* Main Content */}
@@ -102,7 +90,7 @@ function App() {
                 </main>
 
             </div>
-        </AuthContext.Provider>
+        </AuthProvider>
     );
 }
 
