@@ -2,8 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as authService from '../../services/authService'
 import { withAuth } from "../../contexts/AuthContext";
 
-const Register = ({auth.userLogin}) => {
-    const { userRegister } = useContext(AuthContext);
+const Register = ({auth}) => {
     const navigate = useNavigate();
 
     const onSubmit = (e) => {
@@ -21,7 +20,7 @@ const Register = ({auth.userLogin}) => {
 
         authService.register(email, password, repass)
             .then(authData => {
-                userRegister(authData);
+                auth.userRegister(authData);
                 navigate('/');
             })
             .catch(() => {
