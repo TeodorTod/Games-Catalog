@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import * as authService from '../../services/authService'
-import { AuthContext } from "../../contexts/AuthContext";
-import { useContext, useEffect } from "react";
+import { withAuth } from "../../contexts/AuthContext";
 
-const Register = () => {
+const Register = ({auth.userLogin}) => {
     const { userRegister } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -60,4 +59,4 @@ const Register = () => {
     );
 }
 
-export default Register;
+export default withAuth(Register);
