@@ -1,108 +1,96 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { GameContext } from '../../contexts/GameContext';
 
-const GameDetails = ({
-    games,
-    addComment
-}) => {
+import * as gameService from '../../services/gameService';
+import * as commentService from '../../services/commentService';
+
+const GameDetails = () => {
+    const navigate = useNavigate();
+    const { addComment, fetchGameDetails, selectGame, gameRemove } = useContext(GameContext);
     const { gameId } = useParams();
-    const [comment, setComment] = useState({
-        username: '',
-        comment: ''
-    });
 
-    const [error, setError] = useState({
-        username: '',
-        comment: ''
-    });
+    const currentGame = selectGame(gameId);
 
-    const game = games.find(x => x._id == gameId);
+    useEffect(() => {
+        (async () => {
+            const gameDetails = await gameService.getOne(gameId);
+            console.log(gameDetails);
+            const gameComments = await commentService.getByGameId(gameId);
+
+            fetchGameDetails(gameId, { ...gameDetails, comments: gameComments.map(x => `${x.user.email}: ${x.text}`) });
+        })();
+    }, [])
 
     const addCommentHandler = (e) => {
         e.preventDefault();
-        addComment(gameId, `${comment.username}: ${comment.comment}`)
-    }
+        const formData = new FormData(e.target);
 
-    const onChange = (e) => {
-        setComment(state => ({
-            ...state,
-            [e.target.name]: e.target.value
-        }));
+        const comment = formData.get('comment');
+
+        commentService.create(gameId, comment)
+            .then(result => {
+                addComment(gameId, comment);
+            });
     };
 
-    const ValidateUsername = (e) => {
-        const username = e.target.value;
-        let errorMessage = '';
+    const gameDeleteHandler = () => {
+        const confirmation = window.confirm('Are you sure you want to delete this game?');
 
-        if (username.length < 4) {
-            errorMessage = 'Username must be at least 4 characters long';
-        } else if (username.length > 14) {
-            errorMessage = 'Username is too long';
+        if (confirmation) {
+            gameService.remove(gameId)
+                .then(() => {
+                    gameRemove(gameId);
+                    navigate('/catalog');
+                })
         }
-
-        setError(state => ({
-            ...state,
-            username: errorMessage
-        }));
-    };
+    }
 
     return (
         <section id="game-details">
             <h1>Game Details</h1>
             <div className="info-section">
                 <div className="game-header">
-                    <img className="game-img" src={game.imageUrl} />
-                    <h1>{game.title}</h1>
-                    <span className="levels">MaxLevel: {game.maxLevel}</span>
-                    <p className="type">{game.category}</p>
+                    <img className="game-img" src={currentGame.imageUrl} />
+                    <h1>{currentGame.title}</h1>
+                    <span className="levels">MaxLevel: {currentGame.maxLevel}</span>
+                    <p className="type">{currentGame.category}</p>
                 </div>
                 <p className="text">
-                    {game.summary}
+                    {currentGame.summary}
                 </p>
+
                 <div className="details-comments">
                     <h2>Comments:</h2>
                     <ul>
-
-                        {game.comments?.map(x =>
-                            <li key={games._id} className="comment">
+                        {currentGame.comments?.map(x =>
+                            <li key={x} className="comment">
                                 <p>{x}</p>
                             </li>
                         )}
                     </ul>
-                    {!game.comments &&
+
+                    {!currentGame.comments &&
                         <p className="no-comment">No comments.</p>
                     }
-
                 </div>
+
                 <div className="buttons">
                     <Link to={`/games/${gameId}/edit`} className="button">
                         Edit
                     </Link>
-                    <Link to="#" className="button">
+                    <button onClick={gameDeleteHandler} className="button">
                         Delete
-                    </Link>
+                    </button>
                 </div>
             </div>
+
             <article className="create-comment">
                 <label>Add new comment:</label>
                 <form className="form" onSubmit={addCommentHandler}>
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Gosho Peshov"
-                        onChange={onChange}
-                        onBlur={ValidateUsername}
-                        value={comment.username}
-                    />
-                    {error.username &&
-                        <div style={{color: 'red', fontSize: 30}}>{error.username}</div>
-                    }
-
                     <textarea
                         name="comment"
                         placeholder="Comment......"
-                        onChange={onChange}
-                        value={comment.comment}
                     />
 
                     <input
@@ -114,6 +102,6 @@ const GameDetails = ({
             </article>
         </section>
     );
-}
+};
 
 export default GameDetails;

@@ -1,9 +1,10 @@
-import { GameContext } from "../../contexts/GameContext";
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import * as gameService from '../../services/gameService';
+import { useParams, useNavigate } from 'react-router-dom';
 
-export default function EditGame() {
+import * as gameService from '../../services/gameService';
+import { GameContext } from "../../contexts/GameContext";
+
+const EditGame = () => {
     const [currentGame, setCurrentGame] = useState({});
     const { gameEdit } = useContext(GameContext);
     const { gameId } = useParams();
@@ -14,17 +15,17 @@ export default function EditGame() {
             .then(gameData => {
                 setCurrentGame(gameData);
             })
-    }, []);
+    }, [])
 
     const onSubmit = (e) => {
         e.preventDefault();
 
-        const gameData = Object.fromEntries(new FormData(e.currentTarget));
+        const gameData = Object.fromEntries(new FormData(e.target));
 
         gameService.edit(gameId, gameData)
             .then(result => {
                 gameEdit(gameId, result);
-                navigate(`/catalog/${result._id}`)
+                navigate(`/catalog/${gameId}`)
             });
     };
 
@@ -55,3 +56,5 @@ export default function EditGame() {
         </section>
     );
 }
+
+export default EditGame;

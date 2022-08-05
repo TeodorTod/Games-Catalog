@@ -1,20 +1,20 @@
-import { useNavigate } from "react-router-dom";
-import * as authService from "../../services/authService";
-import { AuthContext } from "../../contexts/AuthContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { AuthContext } from "../../contexts/AuthContext";
+import * as authService from "../../services/authService";
 
 const Login = () => {
     const { userLogin } = useContext(AuthContext);
     const navigate = useNavigate();
+
     const onSubmit = (e) => {
         e.preventDefault();
 
         const {
             email,
-            password
+            password,
         } = Object.fromEntries(new FormData(e.target));
-
 
         authService.login(email, password)
             .then(authData => {
@@ -25,6 +25,7 @@ const Login = () => {
                 navigate('/404');
             });
     };
+
     return (
         <section id="login-page" className="auth">
             <form id="login" onSubmit={onSubmit}>
@@ -43,7 +44,7 @@ const Login = () => {
                     <input type="submit" className="btn submit" value="Login" />
                     <p className="field">
                         <span>
-                            If you don't have profile click <a to="/register">here</a>
+                            If you don't have profile click <a href="#">here</a>
                         </span>
                     </p>
                 </div>

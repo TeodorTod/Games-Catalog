@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const LatestGame = ({
     game
@@ -23,6 +23,6 @@ const LatestGame = ({
             </div>
         </div>
     );
-};
+}; 
 
 export default LatestGame;

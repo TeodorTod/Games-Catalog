@@ -1,19 +1,19 @@
-import * as gameServive from '../../services/gameService';
-import { GameContext } from '../../contexts/GameContext';
 import { useContext } from 'react';
 
-const CreateGame = () => {
+import { GameContext } from '../../contexts/GameContext';
+import * as gameService from '../../services/gameService';
 
+const CreateGame = () => {
     const { gameAdd } = useContext(GameContext);
 
     const onSubmit = (e) => {
         e.preventDefault();
 
-        const gameData = Object.fromEntries(new FormData(e.currentTarget));
+        const gameData = Object.fromEntries(new FormData(e.target));
 
-        gameServive.create(gameData)
+        gameService.create(gameData)
             .then(result => {
-                gameAdd(gameData);
+                gameAdd(result)
             });
     };
 
@@ -44,19 +44,24 @@ const CreateGame = () => {
                         min={1}
                         placeholder={1}
                     />
+
                     <label htmlFor="game-img">Image:</label>
+
                     <input
                         type="text"
                         id="imageUrl"
                         name="imageUrl"
                         placeholder="Upload a photo..."
                     />
+
                     <label htmlFor="summary">Summary:</label>
+
                     <textarea name="summary" id="summary" defaultValue={""} />
+
                     <input
                         className="btn submit"
                         type="submit"
-                        defaultValue="Create Game"
+                        value="Create Game"
                     />
                 </div>
             </form>
